@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <form id="location-form">
+    <label>Country:</label>
+    <select id="country-select"></select>
+
+    <label>City:</label>
+    <select id="city-select"></select>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="response"></div>
+
+  <script>
+    function getWeatherIcon(condition) {
+      const text = condition.toLowerCase();
+      if (text.includes("sun") || text.includes("clear")) return "☀️";
+      if (text.includes("rain") || text.includes("drizzle")) return "🌧️";
+      if (text.includes("cloud")) return "☁️";
+    }
+
+    const countries = {
+    Poland: ["Siedlce","Warszawa", "Katowice", "Szczecin","Zielona Gora","Gorzow Wielkopolski","Kielce","Gdynia","Olsztyn","Lublin","Lodz","Krakow","Poznan","Bialystok","Rzeszow","Wroclaw","Gdansk","Torun","Bydgoszcz","Opole"],
+    Germany: ["Berlin", "Munich", "Hamburg","Bremen","Dortmund","Stuttgart","Frankfurt","Leipzig","Dresden"],
+    France: ["Paris", "Bordeaux", "Lyon","Lille","Metz","Marseille"],
+    UK: ["London","Manchester","Liverpool","Birmingham","Edinburgh","Glasgow","Cardiff","Belfast"],
+    USA: ["Los Angeles","San Francisco","New York","Boston","Philadelphia","Miami","Las Vegas"],
+    Italy: ["Rome","Venice","Naples","Milan","Turin"],
+    China:["Pekin","Shenzhen","Shanghai","Guangzhou"],
+    Japan:["Tokyo","Fukushima","Hiroshima","Kyoto","Kawasaki"],
+    Australia:["Canberra","Sydney","Melbourne","Perth"]
+};
+
+    const countrySelect = document.getElementById('country-select');
+    const citySelect = document.getElementById('city-select');
+    const form = document.getElementById('location-form');
+    const responseDiv = document.getElementById('response');
+
+    Object.keys(countries).forEach(c => {
+      countrySelect.innerHTML += `<option>${c}</option>`;
+    });
+
+    function updateCities() {
+      const cities = countries[countrySelect.value] || [];
+      citySelect.innerHTML = cities.map(city => `<option>${city}</option>`).join('');
+    }
+
+    countrySelect.addEventListener('change', updateCities);
+    updateCities();
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const city = citySelect.value;
+
+      try {
+        const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+        if (!res.ok) throw new Error('API error');
+        const result = await res.json();
+
+        responseDiv.innerHTML = `
+          <div class="weather-box">
+            <h2>Weather (${result.location.localtime})</h2>
+            <div id="icon">${getWeatherIcon(result.current.condition.text)}</div>
+            <ul>
+              <li><strong>Temp:</strong> ${result.current.temp_c}°C</li>
+              <li><strong>Condition:</strong> ${result.current.condition.text}</li>
+			  <li><strong>Pressure:</strong> ${result.current.pressure_mb} hPa</li>
+			  <li><strong>Overcast:</strong> ${result.current.cloud}%</li>
+			  <li><strong>Wind:</strong> ${result.current.wind_kph} km/h ${result.current.wind_dir}</li>
+			  <li><strong>Humidity:</strong> ${result.current.humidity}%</li>
+            </ul>
+          </div>
+        `;
+      } catch (err) {
+        responseDiv.innerText = `Error: ${err.message}`;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+  .weather-box {
+    background-color: #f4f8fb;
+    padding: 16px;
+    margin-top: 20px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-family: sans-serif;
+    max-width: 400px;
+  }
+
+  .weather-box h2 {
+    margin-top: 0;
+    font-size: 1.2em;
+    color: #1a3d5d;
+  }
+
+  .weather-box ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  .weather-box li {
+    margin: 6px 0;
+    font-size: 0.95em;
+  }
+
+  .weather-box strong {
+    color: #003366;
+  }
+
+  .weather-box span {
+    font-weight: normal;
+    font-size: 0.9em;
+    color: #999;
+  }

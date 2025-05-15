@@ -19,12 +19,7 @@
   <div id="response"></div>
 
   <script>
-    function getWeatherIcon(condition) {
-      const text = condition.toLowerCase();
-      if (text.includes("sun") || text.includes("clear")) return "☀️";
-      if (text.includes("rain") || text.includes("drizzle")) return "🌧️";
-      if (text.includes("cloud")) return "☁️";
-    }
+    
 
     const countries = {
     Poland: ["Siedlce","Warszawa", "Katowice", "Szczecin","Zielona Gora","Gorzow Wielkopolski","Kielce","Gdynia","Olsztyn","Lublin","Lodz","Krakow","Poznan","Bialystok","Rzeszow","Wroclaw","Gdansk","Torun","Bydgoszcz","Opole"],
@@ -67,7 +62,7 @@
         responseDiv.innerHTML = `
           <div class="weather-box">
             <h2>Weather (${result.location.localtime})</h2>
-            <div id="icon">${getWeatherIcon(result.current.condition.text)}</div>
+            <img src="http:${result.current.condition.icon}"/>
             <ul>
               <li><strong>Temp:</strong> ${result.current.temp_c}°C</li>
               <li><strong>Condition:</strong> ${result.current.condition.text}</li>

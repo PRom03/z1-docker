@@ -1,5 +1,5 @@
 
-![obraz](https://github.com/user-attachments/assets/9cbda072-8947-4228-a6e6-1c69de8590f0)
+![obraz](https://github.com/user-attachments/assets/c7b5c942-3a3e-4415-9d15-241b05ccaf36)
 
 
 C:\Users\romp1\z1-docker>docker-compose build

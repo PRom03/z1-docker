@@ -1,7 +1,13 @@
+# syntax=docker/dockerfile:1.4
 FROM node:18-alpine AS builder
 LABEL org.opencontainers.image.authors="Przemysław Romaniak"
+RUN apk add --no-cache git openssh
+RUN mkdir -p -m 0700 ~/.ssh && \
+    ssh-keyscan github.com >> ~/.ssh/known_hosts
+RUN --mount=type=ssh \
+    git clone git@github.com:prom03/z1-docker.git /app
 WORKDIR /app
-COPY backend .
+
 RUN npm install express
 
 FROM node:18-alpine AS runner

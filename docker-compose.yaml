@@ -12,9 +12,11 @@ services:
       - backend
 
   backend:
+    image: prem1rom/z1-docker-backend:latest
     build:
       context: .
       dockerfile: Dockerfile
+
     ports:
       - "3000:3000"
     environment:

@@ -11,5 +11,4 @@ target "backend" {
   cache-from = ["type=registry,ref=prem1rom/z1-docker-backend:buildcache"]
   cache-to   = ["type=registry,ref=prem1rom/z1-docker-backend:buildcache,mode=max"]
   ssh = ["default"]
-  pull = true
 }

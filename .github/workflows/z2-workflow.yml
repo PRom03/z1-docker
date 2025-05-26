@@ -55,7 +55,7 @@ jobs:
           tags: temp-local-image
 
       - name: Run Trivy
-        uses: aquasecurity/trivy-action@0.16.2
+        uses: aquasecurity/trivy-action@0.30.0
         with:
           image-ref: temp-local-image
           exit-code: 1

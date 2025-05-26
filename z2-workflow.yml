@@ -1,0 +1,85 @@
+name: Z2
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_and_push:
+    name: Build and push to ghcr.io
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: QEMU setup
+        uses: docker/setup-qemu-action@v3
+
+      - name: Docker Buildx setup
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/PRom03/z1-docker-backend
+          tags: |
+            type=sha,priority=100,prefix=sha-,format=short
+            type=semver,priority=200,pattern={{version}}
+          flavor: latest=false
+
+      - name: Sign in - ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build for a vulnerability check
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          load: true
+          platforms: linux/amd64  
+          tags: temp-local-image
+
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@0.16.2
+        with:
+          image-ref: temp-local-image
+          exit-code: 1
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          format: table
+          output: trivy-results.txt
+
+      - name: Upload scan results (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-results.txt
+
+      - name: Build and push to GHCR
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: |
+            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/example:cache
+          cache-to: |
+            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/example:cache,mode=max
